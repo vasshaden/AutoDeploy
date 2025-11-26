@@ -62,3 +62,12 @@ docker build -t autodeploy .
 ```bash
 docker run -p 5000:5000 autodeploy
 ```
+
+
+или
+
+## Сборка образа
+```bash
+docker build -t flask-test-app:latest .
+для сборки docker-compose up -d в дальнейшем
+```

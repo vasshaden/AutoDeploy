@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   backend:
-    image: vasshaden/flask-test-app:latest
+    build: .
     container_name: flask-backend
     ports:
       - "5000:5000"
