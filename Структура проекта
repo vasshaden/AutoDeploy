@@ -1,0 +1,9 @@
+AutoDeploy/
+├── app.py
+├── requirements.txt
+├── Dockerfile
+├── docker-compose.yml
+├── frontend/
+│   ├── index.html
+│   └── nginx.conf
+└── DOCKER_INSTRUCTIONS.md
