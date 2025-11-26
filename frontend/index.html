@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Docker Test App - Frontend</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+h1 {
+    color: #333;
+    text-align: center;
+}
+.status {
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 4px;
+    font-weight: bold;
+}
+.status.healthy {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+.status.unhealthy {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+button:hover {
+    background-color: #0056b3;
+}
+.result {
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-left: 4px solid #007bff;
+}
+input {
+    padding: 8px;
+    margin: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>🐳 Docker Test Application</h1>
+    
+    <div id="status" class="status">Проверка статуса...</div>
+    
+    <div>
+        <h3>🔧 Управление</h3>
+        <button onclick="checkHealth()">Проверить здоровье</button>
+        <button onclick="getSystemInfo()">Системная информация</button>
+        <button onclick="getHomeInfo()">Домашняя страница</button>
+    </div>
+    
+    <div>
+        <h3>🧮 Калькулятор</h3>
+        <input type="number" id="num1" placeholder="Число 1" value="10">
+        <input type="number" id="num2" placeholder="Число 2" value="5">
+        <button onclick="multiply()">Умножить</button>
+        <button onclick="divide()">Разделить</button>
+    </div>
+    
+    <div id="result" class="result" style="display:none;"></div>
+</div>
+
+<script>
+const API_BASE = '/api';
+
+async function checkHealth() {
+    try {
+        const response = await fetch(`${API_BASE}/health`);
+        const data = await response.json();
+        showResult('Статус здоровья', data);
+        updateStatus(data.status === 'healthy');
+    } catch (error) {
+        showResult('Ошибка', { error: error.message });
+        updateStatus(false);
+    }
+}
+
+async function getSystemInfo() {
+    try {
+        const response = await fetch(`${API_BASE}/info`);
+        const data = await response.json();
+        showResult('Системная информация', data);
+    } catch (error) {
+        showResult('Ошибка', { error: error.message });
+    }
+}
+
+async function getHomeInfo() {
+    try {
+        const response = await fetch(`${API_BASE}/`);
+        const data = await response.json();
+        showResult('Домашняя страница', data);
+    } catch (error) {
+        showResult('Ошибка', { error: error.message });
+    }
+}
+
+async function multiply() {
+    const num1 = document.getElementById('num1').value;
+    const num2 = document.getElementById('num2').value;
+    try {
+        const response = await fetch(`${API_BASE}/multiply/${num1}/${num2}`);
+        const data = await response.json();
+        showResult(`Умножение ${num1} × ${num2}`, data);
+    } catch (error) {
+        showResult('Ошибка', { error: error.message });
+    }
+}
+
+async function divide() {
+    const num1 = document.getElementById('num1').value;
+    const num2 = document.getElementById('num2').value;
+    try {
+        const response = await fetch(`${API_BASE}/divide/${num1}/${num2}`);
+        const data = await response.json();
+        showResult(`Деление ${num1} ÷ ${num2}`, data);
+    } catch (error) {
+        showResult('Ошибка', { error: error.message });
+    }
+}
+
+function showResult(title, data) {
+    const resultDiv = document.getElementById('result');
+    resultDiv.innerHTML = `<h4>${title}</h4><pre>${JSON.stringify(data, null, 2)}</pre>`;
+    resultDiv.style.display = 'block';
+}
+
+function updateStatus(isHealthy) {
+    const statusDiv = document.getElementById('status');
+    if (isHealthy) {
+        statusDiv.className = 'status healthy';
+        statusDiv.textContent = '✅ Сервис работает нормально';
+    } else {
+        statusDiv.className = 'status unhealthy';
+        statusDiv.textContent = '❌ Проблемы с сервисом';
+    }
+}
+
+// Автоматическая проверка при загрузке
+window.onload = function() {
+    checkHealth();
+};
+</script>
+</body>
+</html>
